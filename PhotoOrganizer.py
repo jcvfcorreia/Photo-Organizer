@@ -51,35 +51,9 @@ if __name__ == "__main__":
             for f in outFileList:
                 if not str(f.fileName).__contains__("._"):
                     #print("%s - %s" % (f.fileName,datetime.fromtimestamp(f.creationDate)))
+                    print(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day)))
+                    print(os.path.exists(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)), str(f.day))))
 
-                    if os.path.exists(os.path.join(outputPath,str(f.year))):
-                        if os.path.exists(os.path.join(os.path.join(outputPath, str(f.year)),str(f.month))):
-                            if os.path.exists(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day))):
-                                shutil.copyfile(os.path.join(inputPath,f.fileName), os.path.join(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day)),f.fileName))
-                                print(f.year)
-                                print(f.month)
-                                print(f.day)
-                        else:
-                            os.mkdir(os.path.join(os.path.join(outputPath, str(f.year)),str(f.month)))
-                            if os.path.exists(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day))):
-                                shutil.copyfile(os.path.join(inputPath, f.fileName), os.path.join(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day)), f.fileName))
-                            else:
-                                os.mkdir(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day)))
-                                shutil.copyfile(os.path.join(inputPath, f.fileName), os.path.join(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day)), f.fileName))
-                    else:
-                        os.mkdir(os.path.join(outputPath,str(f.year)))
-
-                        if not os.path.exists(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month))):
-                            os.mkdir(os.path.join(os.path.join(outputPath,str(f.year)), str(f.month)))
-
-                        if not os.path.exists(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day))):
-                            os.mkdir(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day)))
-
-                        shutil.copyfile(os.path.join(inputPath, f.fileName), os.path.join(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day)), f.fileName))
-
-                        print(f.year)
-                        print(f.month)
-                        print(f.day)
         else:
             raise Exception("Nº de argumentos errados.\nFormato correcto é <nome programa> -i <diretorio entrada> -o <diretorio saida>")
     except Exception as ex:
