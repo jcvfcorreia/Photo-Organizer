@@ -82,7 +82,7 @@ if __name__ == "__main__":
                 thread[i].join()
 
         else:
-            raise Exception("Nº de argumentos errados.\nFormato correcto é <nome programa> -i <diretorio entrada> -o <diretorio saida>")
+            raise Exception("Wrong number of arguments.\nThe correct format is <programName> -i <input dir> -o <output dir>")
     except Exception as ex:
         print("ex %s" % (ex.args[0]))
 
