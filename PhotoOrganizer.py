@@ -24,6 +24,14 @@ def getFiles(inputPath):
             outFileList.append(File(inputPath,f.split('\\')[-1]))
     return outFileList
 
+
+def createpath(ipath):
+    opath = ""
+    for p in ipath.split(os.sep):
+        opath = opath + p + os.sep
+        if not os.path.exists(opath):
+            os.mkdir(opath)
+
 if __name__ == "__main__":
     try:
         inputPath = None
@@ -52,7 +60,10 @@ if __name__ == "__main__":
                 if not str(f.fileName).__contains__("._"):
                     #print("%s - %s" % (f.fileName,datetime.fromtimestamp(f.creationDate)))
                     print(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day)))
-                    print(os.path.exists(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)), str(f.day))))
+                    if not os.path.exists(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)), str(f.day))):
+                        createpath(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)), str(f.day)))
+                    destination = os.path.join(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)), str(f.day)), f.fileName)
+                    shutil.copyfile(os.path.join(inputPath,f.fileName), destination)
 
         else:
             raise Exception("Nº de argumentos errados.\nFormato correcto é <nome programa> -i <diretorio entrada> -o <diretorio saida>")
