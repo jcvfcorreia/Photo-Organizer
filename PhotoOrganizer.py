@@ -2,6 +2,8 @@ __author__ = "João Correia"
 import os
 from datetime import datetime
 import sys,shutil
+import threading
+import time
 
 class File(object):
     def __init__(self, dirName, fileName):
@@ -15,15 +17,25 @@ class File(object):
     def __lt__(self, other):
         return self.creationDate < other.creationDate
 
+def copyFiles(origin, destination):
+    with open(origin,"rb") as file:
+        b = file.read()
+    file.close()
+    file = None
+    with open(destination,"wb") as file:
+        file.write(b)
+    file.close()
+
+def timeTook(begin, end):
+    print("Took %s seconds to copy files" % str((end - begin).seconds))
+
 def getFiles(inputPath):
     outFileList = list()
     for file in os.listdir(inputPath):
         f = os.path.join(inputPath,file)
         if os.path.isfile(f):
-            #print(f.split('\\')[-1])
-            outFileList.append(File(inputPath,f.split('\\')[-1]))
+            outFileList.append(File(inputPath,f.split(os.sep)[-1]))
     return outFileList
-
 
 def createpath(ipath):
     opath = ""
@@ -33,10 +45,12 @@ def createpath(ipath):
             os.mkdir(opath)
 
 if __name__ == "__main__":
+    begin = datetime.now()
+    print("Started at: %s" % begin.strftime("%Y-%m-%d %H:%M:%S"))
     try:
+        thread = []
         inputPath = None
         outputPath = None
-
         if len(sys.argv) is 5:
             if sys.argv[1] == "-i" or sys.argv[1] == "-o":
                 if sys.argv[1] == "-i":
@@ -51,21 +65,27 @@ if __name__ == "__main__":
             if os.path.exists(outputPath):
                 shutil.rmtree(outputPath)
 
+            #time.sleep(2)
+
             os.mkdir(outputPath)
 
             outFileList = getFiles(inputPath)
-            outFileList.sort()
-            print(outputPath)
             for f in outFileList:
-                if not str(f.fileName).__contains__("._"):
-                    #print("%s - %s" % (f.fileName,datetime.fromtimestamp(f.creationDate)))
-                    print(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)),str(f.day)))
-                    if not os.path.exists(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)), str(f.day))):
-                        createpath(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)), str(f.day)))
-                    destination = os.path.join(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)), str(f.day)), f.fileName)
-                    shutil.copyfile(os.path.join(inputPath,f.fileName), destination)
+                if not os.path.exists(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)), str(f.day))):
+                    createpath(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)), str(f.day)))
+                destination = os.path.join(os.path.join(os.path.join(os.path.join(outputPath, str(f.year)), str(f.month)), str(f.day)), f.fileName)
+                thread.append(threading.Thread(target=copyFiles,args=(os.path.join(inputPath,f.fileName), destination, ), name=destination))
+
+            for i in range(len(thread)):
+                thread[i].start()
+                print(thread[i].name)
+                thread[i].join()
 
         else:
             raise Exception("Nº de argumentos errados.\nFormato correcto é <nome programa> -i <diretorio entrada> -o <diretorio saida>")
     except Exception as ex:
         print("ex %s" % (ex.args[0]))
+
+    end = datetime.now()
+    print("Ended at: %s" % end.strftime("%Y-%m-%d %H:%M:%S"))
+    timeTook(begin, end)
